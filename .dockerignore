@@ -1,0 +1,11 @@
+.git
+.gitignore
+.env
+.env.*
+Data.php
+vendor
+node_modules
+.DS_Store
+*.log
+docker-compose*.yml
+README-RENDER.md
