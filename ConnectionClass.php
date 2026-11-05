@@ -26,6 +26,8 @@
 #
 #***************************************************************************************
 // Establish MySQL DB connection.  
+require_once __DIR__ . '/functions/DatabaseConnection.php';
+
 class ConnectDBOpensis
 {
     public $auto_init = true;
@@ -34,12 +36,12 @@ class ConnectDBOpensis
     {
         $user_agent = explode('/', isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
         if (isset($user_agent[0]) && $user_agent[0] == 'Mozilla') {
-            $conn = new mysqli($DatabaseServer, $DatabaseUsername, $DatabasePassword, $DatabaseName);
-            // Disable strict mode to ensure compatibility
-            if ($conn && !$conn->connect_errno) {
-                $conn->query("SET SESSION sql_mode = ''");
+            try {
+                return opensis_mysqli_connect($DatabaseName);
+            } catch (Throwable $e) {
+                error_log('openSIS database connection: ' . $e->getMessage());
+                return false;
             }
-            return $conn;
         }
         return null;
     }
