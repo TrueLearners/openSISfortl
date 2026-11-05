@@ -29,6 +29,7 @@
 include 'RedirectRootInc.php';
 include 'Warehouse.php';
 include 'Data.php';
+require_once __DIR__ . '/functions/FileStorage.php';
 
 // Prevent Directory Traversal by sanitizing filename parameters
 if (User('PROFILE') == 'student')
@@ -101,12 +102,20 @@ if(isset($_REQUEST['down_id']) && $_REQUEST['down_id']!='')
 
     if(isset($_REQUEST['studentfile']) && $_REQUEST['studentfile']=='Y')
     {
-        $filedata = @file_get_contents('assets/studentfiles/'.$downfile_info[1]['NAME']);
+        $filedata = opensis_file_get_contents($downfile_info[1]['CONTENT'], 'studentfiles', $downfile_info[1]['NAME']);
+        if ($filedata === false) {
+            http_response_code(404);
+            exit('File not found.');
+        }
         echo $filedata;
     }
     else if(isset($_REQUEST['userfile']) && $_REQUEST['userfile']=='Y')
     {
-        $filedata = @file_get_contents('assets/stafffiles/'.$downfile_info[1]['NAME']);
+        $filedata = opensis_file_get_contents($downfile_info[1]['CONTENT'], 'stafffiles', $downfile_info[1]['NAME']);
+        if ($filedata === false) {
+            http_response_code(404);
+            exit('File not found.');
+        }
         echo $filedata;
     }
     else
