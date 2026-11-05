@@ -27,14 +27,15 @@
 #
 #***************************************************************************************
 include '../functions/ParamLibFnc.php';
+require_once '../functions/DatabaseConnection.php';
 require_once("../functions/PragRepFnc.php");
 session_start();
 
-$_SESSION['username'] = $_POST["addusername"];
-$_SESSION['password'] = $_POST["addpassword"];
-$_SESSION['server'] = $_POST["server"];
-$_SESSION['port'] = $_POST["port"];
-$_SESSION['host'] = $_POST['server'] . ($_POST['port'] != '3306' ? ':' . $_POST['port'] : '');
+$_SESSION['username'] = getenv('DB_USERNAME') ?: ($_POST['addusername'] ?? '');
+$_SESSION['password'] = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : ($_POST['addpassword'] ?? '');
+$_SESSION['server'] = getenv('DB_HOST') ?: ($_POST['server'] ?? '');
+$_SESSION['port'] = getenv('DB_PORT') ?: ($_POST['port'] ?? '3306');
+$_SESSION['host'] = $_SESSION['server'] . ($_SESSION['port'] != '3306' ? ':' . $_SESSION['port'] : '');
 $_SESSION['host_mod'] = $_POST['server']; // Used by Selectdb.php for upgrade flow
 $err .= '<!DOCTYPE html>
 <html lang="en">
@@ -97,7 +98,7 @@ $err .= '<!DOCTYPE html>
 </html>';
 //$dbconn = mysqli_connect($_SESSION['host'],$_SESSION['username'],$_SESSION['password'])
 try{
-    $dbconn = new mysqli($_SESSION['server'], $_SESSION['username'], $_SESSION['password'], '', $_SESSION['port']);
+    $dbconn = opensis_mysqli_connect('');
     } catch (Exception $e) {
         // echo 'Caught exception: ', $e->getMessage(), "\n";
         exit($err);
