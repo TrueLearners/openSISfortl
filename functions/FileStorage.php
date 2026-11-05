@@ -10,7 +10,7 @@ if (!function_exists('opensis_b2_client')) {
     function opensis_b2_configured()
     {
         return getenv('B2_BUCKET') && getenv('B2_KEY_ID') &&
-            getenv('B2_APPLICATION_KEY') && (getenv('B2_ENDPOINT') || getenv('B2_REGION'));
+            getenv('B2_APPLICATION_KEY') && getenv('B2_REGION');
     }
 
     function opensis_b2_client()
