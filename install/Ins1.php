@@ -36,7 +36,9 @@ $_SESSION['password'] = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') 
 $_SESSION['server'] = getenv('DB_HOST') ?: ($_POST['server'] ?? '');
 $_SESSION['port'] = getenv('DB_PORT') ?: ($_POST['port'] ?? '3306');
 $_SESSION['host'] = $_SESSION['server'] . ($_SESSION['port'] != '3306' ? ':' . $_SESSION['port'] : '');
-$_SESSION['host_mod'] = $_POST['server']; // Used by Selectdb.php for upgrade flow
+$_SESSION['host_mod'] = $_POST['server'] ?? $_SESSION['server']; // Used by Selectdb.php for upgrade flow
+$mod = clean_param($_REQUEST['mod'] ?? '', PARAM_ALPHAMOD);
+$err = '';
 $err .= '<!DOCTYPE html>
 <html lang="en">
     <head>
@@ -80,7 +82,7 @@ $err .= '<!DOCTYPE html>
                             <div class="installation-steps">
 
                                 <h2 class="text-center">Couldn\'t connect to database server: ' . $_SESSION['host'].'</h2><br/>';
-                                if (clean_param($_REQUEST['mod'], PARAM_ALPHAMOD) == 'upgrade') {
+                                if ($mod == 'upgrade') {
                                     $err .= '<p class="text-center"><a href="Step1.php?mod=upgrade" class="btn btn-primary"><i class="fa fa-refresh"></i> Try Again</a></p>';
                                 } else {
                                     $err .= '<p class="text-center"><a href="Step1.php" class="btn btn-primary"><i class="fa fa-refresh"></i> Try Again</a></p>';
