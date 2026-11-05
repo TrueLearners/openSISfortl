@@ -6,7 +6,7 @@ This repository includes a Docker-based Apache/PHP deployment for Render.
 
 The image includes PHP 8.4.27, Apache, mysqli, common openSIS PHP extensions, and the AWS PHP SDK. The installer still creates the openSIS `Data.php` configuration file.
 
-**Do not use this deployment for real student records yet.** Render's free filesystem is ephemeral. This blueprint does not provide a persistent disk, and B2 credentials alone do not redirect openSIS uploads to B2. The B2 SDK is included as a building block; upload/download integration and TiDB TLS support must be validated before production.
+**Do not use this deployment for real student records yet.** Render's free filesystem is ephemeral. The main student/staff attachment upload screens now use the B2 adapter when B2 is configured, and `DownloadWindow.php` reads those B2 objects. Staff/student photos and school logos are stored in TiDB as database BLOBs, not in B2. The legacy student file screen (`modules/students/includes/Files.inc.php`) still uses local disk and is not covered. The integration still needs a successful live B2 test and full application testing before production.
 
 ## Render
 
@@ -29,12 +29,13 @@ Create a private bucket and an application key scoped to that bucket. Set the Re
 - `B2_APPLICATION_KEY`
 - `B2_ENDPOINT` (for example, `https://s3.us-west-002.backblazeb2.com`)
 
-These variables are reserved for the B2 integration. They do not by themselves make uploads persistent yet.
+These variables activate the S3-compatible B2 adapter for the main student and staff attachment screens. The adapter stores objects under `opensis/studentfiles/` and `opensis/stafffiles/`, writes the object key marker into `user_file_upload.CONTENT`, and retrieves/deletes the object through the same adapter. `B2_REGION` is required for AWS Signature V4; `B2_ENDPOINT` should match that region. Keep the bucket private and use an application key limited to the bucket. If B2 is not configured, the adapter falls back to local disk, which is not persistent on Render Free.
 
 ## Before production
 
-- Implement and test B2-backed file uploads, downloads, and deletes for every openSIS file area.
-- Add TiDB TLS support to all installer and runtime mysqli connections.
+- Test B2 upload, download, and delete end-to-end with fake files; confirm the object appears in the private bucket and survives a Render restart.
+- Migrate or disable the legacy student file screen before relying on B2 for all attachments.
+- Verify TiDB TLS and database operations through the full installer and runtime.
 - Set up automated database backups and test restoring them.
 - Disable or remove the installer after setup.
 - Use a paid always-on service and suitable persistent storage; test with fake records first.
