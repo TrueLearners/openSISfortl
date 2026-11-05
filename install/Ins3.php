@@ -28,11 +28,12 @@
 #***************************************************************************************
 include '../functions/ParamLibFnc.php';
 require_once("../functions/PragRepFnc.php");
+require_once "../functions/DatabaseConnection.php";
 session_start();
 
 // Helper function to create mysqli connection with strict mode disabled
 function createConnectionIns3($server, $username, $password, $database = '', $port = 3306) {
-    $conn = new mysqli($server, $username, $password, $database, $port);
+    $conn = opensis_mysqli_connect($database);
     if ($conn && !$conn->connect_errno) {
         $conn->query("SET SESSION sql_mode = ''");
     }
