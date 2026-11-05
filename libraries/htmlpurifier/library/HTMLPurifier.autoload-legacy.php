@@ -1,15 +1,11 @@
 <?php
 
 /**
- * @file
- * Legacy autoloader for systems lacking spl_autoload_register
+ * Legacy autoloader compatibility shim.
  *
- * Must be separate to prevent deprecation warning on PHP 7.2
+ * PHP 8 removed the global __autoload() hook. Register the same HTML Purifier
+ * loader through SPL, which is available on all supported PHP versions here.
  */
-
-function __autoload($class)
-{
-    return HTMLPurifier_Bootstrap::autoload($class);
-}
+spl_autoload_register(array('HTMLPurifier_Bootstrap', 'autoload'));
 
 // vim: et sw=4 sts=4
