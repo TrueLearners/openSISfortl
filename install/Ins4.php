@@ -32,16 +32,14 @@ error_reporting(E_ALL);
 session_start();
 
 require_once "../functions/PasswordHashFnc.php";
+require_once "../functions/DatabaseConnection.php";
 
 $_SESSION['admin_name'] = $_POST['auname'];
 $_SESSION['admin_pwd'] = GenerateNewHash($_POST['apassword']);
 
 require_once "../functions/PragRepFnc.php";
 //mysql_select_db($_SESSION['db']);
-$dbconn = new mysqli($_SESSION['server'],$_SESSION['username'],$_SESSION['password'],$_SESSION['db'],$_SESSION['port']);
-if ($dbconn && !$dbconn->connect_errno) {
-    $dbconn->query("SET SESSION sql_mode = ''");
-}
+$dbconn = opensis_mysqli_connect($_SESSION['db']);
 if($dbconn->connect_errno!=0)
 {
     echo "<h2>" . $dbconn->error . "</h2>\n";
