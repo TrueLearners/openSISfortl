@@ -28,6 +28,7 @@
 // Establish MySQL DB connection.
 include 'RedirectRootInc.php';
 include 'ConnectionClass.php';
+require_once 'functions/DatabaseConnection.php';
 require_once "functions/PragRepFnc.php";
 function db_start()
 {
@@ -58,7 +59,7 @@ function db_start()
 
 ##### Connection help #####
 if (!empty($DatabaseServer) && !empty($DatabaseUsername) && !empty($DatabaseName))
-    $connection = mysqli_connect($DatabaseServer, $DatabaseUsername, $DatabasePassword, $DatabaseName);
+    $connection = opensis_mysqli_connect($DatabaseName);
 
     if ($connection) {
         $result = $connection->query("SHOW VARIABLES WHERE VARIABLE_NAME = 'event_scheduler'");
