@@ -28,7 +28,25 @@
 #***************************************************************************************
 include('../../../RedirectIncludes.php');
 require_once dirname(__DIR__, 3) . '/functions/FileStorage.php';
+
 $dir = 'assets/stafffiles';
+require_once dirname(__DIR__, 3) . '/functions/FileStorage.php';
+
+// Remove a staff attachment from both the database and its storage backend.
+if ($_REQUEST['modfunc'] == 'delete' &&
+    (User('PROFILE') == 'admin' || User('PROFILE') == 'teacher' || User('PROFILE') == 'staff')) {
+    $fileId = isset($_REQUEST['del']) ? (int) $_REQUEST['del'] : 0;
+    $ownerClause = User('PROFILE') == 'admin' ? '' : ' AND USER_ID=' . (int) UserStaffID();
+    $stored = DBGet(DBQuery(
+        "SELECT ID, NAME, CONTENT FROM user_file_upload WHERE ID=" . $fileId .
+        " AND FILE_INFO='stafffile'" . $ownerClause
+    ));
+    if (!empty($stored[1])) {
+        opensis_file_delete($stored[1]['CONTENT'], 'stafffiles', $stored[1]['NAME']);
+        DBQuery('DELETE FROM user_file_upload WHERE ID=' . $fileId);
+    }
+    unset($_REQUEST['modfunc']);
+}
 
 // if ($_REQUEST['modfunc'] == 'delete' && (User('PROFILE') == 'admin' || User('PROFILE') == 'teacher')) {
 //     if (!$_REQUEST['delete_ok'] && !$_REQUEST['delete_cancel']) {
