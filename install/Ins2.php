@@ -27,6 +27,7 @@
 #***************************************************************************************
 include '../functions/ParamLibFnc.php';
 require_once "../functions/PragRepFnc.php";
+require_once "../functions/DatabaseConnection.php";
 session_start();
 
 // Restore session variables from hidden form fields if session is empty
@@ -41,9 +42,9 @@ if (empty($_SESSION['server']) && !empty($_POST['sess_server'])) {
 // Helper function to create mysqli connection with strict mode disabled
 function createConnection($server, $username, $password, $database = '', $port = 3306) {
     if ($database != '') {
-        $conn = new mysqli($server, $username, $password, $database, $port);
+        $conn = opensis_mysqli_connect($database);
     } else {
-        $conn = new mysqli($server, $username, $password, '', $port);
+        $conn = opensis_mysqli_connect('');
     }
     if ($conn && !$conn->connect_errno) {
         $conn->query("SET SESSION sql_mode = ''");
