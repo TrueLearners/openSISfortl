@@ -7,6 +7,20 @@ services:
     envVars:
       - key: APP_ENV
         value: production
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "4000"
+      - key: DB_DATABASE
+        value: opensis
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSL
+        value: "true"
+      - key: DB_SSL_CA
+        sync: false
       - key: B2_REGION
         sync: false
       - key: B2_BUCKET
