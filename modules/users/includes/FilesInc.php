@@ -27,6 +27,7 @@
 #
 #***************************************************************************************
 include('../../../RedirectIncludes.php');
+require_once dirname(__DIR__, 3) . '/functions/FileStorage.php';
 $dir = 'assets/stafffiles';
 
 // if ($_REQUEST['modfunc'] == 'delete' && (User('PROFILE') == 'admin' || User('PROFILE') == 'teacher')) {
@@ -108,15 +109,22 @@ if (!$_REQUEST['modfunc']) {
                 $rejectedFiles['typeErrorFiles'] .= $fileName.', ';
             } else {
 
-                if(!move_uploaded_file($_FILES["uploadfile"]["tmp_name"][$ifl], $upload->target_path))
-                {
-                    // $msg = '<div class="alert alert-danger alert-styled-left">Cannot upload file. Invalid Permission</div>';
+                try {
+                    $storedContent = opensis_file_store_uploaded(
+                        $_FILES["uploadfile"]["tmp_name"][$ifl],
+                        'stafffiles',
+                        basename($target_path),
+                        $fileType
+                    );
+                } catch (Throwable $storageError) {
+                    error_log('openSIS staff attachment storage failed: ' . $storageError->getMessage());
+                    $storedContent = false;
+                }
 
+                if ($storedContent === false) {
                     $rejectedFiles['permissionError']++;
                     $rejectedFiles['permissionErrorFiles'] .= $fileName.', ';
-                }
-                else
-                {
+                } else {
                     $target_path1 = $dir.'/'.UserStaffID().'-'.$_FILES['uploadfile']['name'][$ifl]; 
                     // if(file_exists($target_path1) && file_exists($_SESSION['dup_file_name']))
                     // {
@@ -124,7 +132,7 @@ if (!$_REQUEST['modfunc']) {
                     // }
                     
                     $fileName = str_replace($dir.'/', '', $target_path);
-                    $content = 'IN_DIR';
+                    $content = $storedContent;
 
                     DBQuery('INSERT INTO user_file_upload (USER_ID,PROFILE_ID,SCHOOL_ID,SYEAR,NAME, SIZE, TYPE, CONTENT,FILE_INFO) VALUES (' . UserStaffID() . ',\''.User('PROFILE_ID').'\',' . UserSchool() . ',' . UserSyear() . ',\'' . $fileName . '\', \'' . $fileSize . '\', \'' . $fileType . '\', \'' . $content . '\',\'stafffile\')');
 
