@@ -168,7 +168,7 @@ $sess_data = base64_encode(json_encode([
     'host' => $_SESSION['host']
 ]));
 
-if (clean_param($_REQUEST['mod'], PARAM_ALPHAMOD) == 'upgrade') {
+if ($mod == 'upgrade') {
     header('Location: Selectdb.php?sd=' . urlencode($sess_data));
 } else {
     header('Location: Step2.php?sd=' . urlencode($sess_data));
